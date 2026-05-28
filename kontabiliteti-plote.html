@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kontabiliteti">
+<meta name="theme-color" content="#1f3864">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Kontabiliteti i plotë</title>
+<style>
+  :root{
+    --navy:#1f3864;--blue:#2e5496;--paper:#f6f3ec;--ink:#1a1c22;
+    --green:#1f7a4d;--red:#b3261e;--line:#d8d2c4;--gold:#b8862f;--card:#fffdf8;
+    --exp:#8a4326;--purp:#5b4b8a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;background:var(--paper);color:var(--ink);font-size:13.5px;line-height:1.4}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px}
+  header.top{background:var(--navy);color:#fff;border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 6px 20px rgba(31,56,100,.18)}
+  header.top h1{font-family:Georgia,serif;font-size:20px;margin:0;font-weight:600}
+  header.top h1 small{display:block;font-size:10px;font-weight:400;color:#b9c6e0;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+  .yr{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .yr label{font-size:11px;color:#b9c6e0;text-transform:uppercase;letter-spacing:1px}
+  .yr input{width:90px;background:#fff;border:none;color:var(--navy);border-radius:6px;padding:7px 10px;font-size:15px;font-weight:700;text-align:center}
+  .gbtns{display:flex;gap:7px}
+  .gbtns button{font-size:12px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;padding:7px 11px;border-radius:6px;cursor:pointer}
+  .gbtns button:hover{background:rgba(255,255,255,.22)}
+  nav.tabs{display:flex;gap:4px;margin:16px 0;flex-wrap:wrap;border-bottom:2px solid var(--line)}
+  nav.tabs button{font-family:inherit;font-size:13.5px;background:transparent;border:none;padding:10px 16px;cursor:pointer;color:#6c6657;font-weight:600;border-bottom:3px solid transparent;margin-bottom:-2px}
+  nav.tabs button:hover{color:var(--blue)}
+  nav.tabs button.active{color:var(--navy);border-bottom-color:var(--gold)}
+  .view{display:none} .view.active{display:block}
+  h2.sec{font-family:Georgia,serif;font-size:17px;color:var(--navy);margin:22px 0 10px;font-weight:600}
+  button.act{font-family:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 13px;border-radius:7px;cursor:pointer;font-weight:500}
+  button.act:hover{border-color:var(--blue);color:var(--blue)}
+  button.act.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+  button.act.primary:hover{background:var(--navy)}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;border-top:3px solid var(--blue)}
+  .card .lab{font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:#7b766a}
+  .card .val{font-family:Georgia,serif;font-size:22px;font-weight:600;margin-top:5px;color:var(--navy);font-variant-numeric:tabular-nums}
+  .card.g{border-top-color:var(--green)} .card.g .val{color:var(--green)}
+  .card.r{border-top-color:var(--red)} .card.r .val{color:var(--red)}
+  .card.gold{border-top-color:var(--gold)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:13px}
+  thead th{background:var(--blue);color:#fff;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;padding:9px 7px;text-align:left;white-space:nowrap}
+  thead th.num{text-align:right}
+  table.exp thead th{background:var(--exp)}
+  tbody td{border-top:1px solid var(--line);padding:2px 5px;vertical-align:middle}
+  tbody tr:nth-child(even){background:#faf7f0}
+  tbody input,tbody select{width:100%;border:1px solid transparent;background:transparent;font-family:inherit;font-size:13px;padding:5px 4px;border-radius:5px;color:var(--ink)}
+  tbody input:focus,tbody select:focus{outline:none;border-color:var(--blue);background:#fff}
+  tbody input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
+  td.calc{text-align:right;font-variant-numeric:tabular-nums;color:#555;padding-right:8px;white-space:nowrap}
+  td.calc.b{font-weight:600;color:var(--navy)}
+  .del{border:none;background:transparent;color:#b8b2a4;font-size:15px;cursor:pointer;padding:2px 5px}
+  .del:hover{color:var(--red)}
+  tfoot td{border-top:2px solid var(--navy);background:#eef1f7;font-weight:700;padding:9px 7px}
+  tfoot td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .mini td,.mini th{padding:7px 9px}
+  .mini td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .pos{color:var(--green)} .neg{color:var(--red)}
+  .setbox{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;max-width:560px}
+  .setrow{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .setrow label{flex:1;font-weight:500}
+  .setrow input{width:200px;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-family:inherit;font-size:13.5px;text-align:right}
+  .setrow input[type=text]{text-align:left}
+  .listbox{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+  .listbox textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:8px;padding:10px;font-family:inherit;font-size:13px;resize:vertical}
+  .hint{color:#8a857a;font-size:12px;margin-top:12px;font-style:italic}
+  .scroll{overflow-x:auto}
+  .printonly{display:none}
+  @media print{
+    body{background:#fff;font-size:11.5px}
+    .wrap{max-width:100%;padding:0}
+    nav.tabs,.gbtns,.yr label,.toolbar,.del,th.act,td.act,.hint,.noprint{display:none !important}
+    header.top{background:#fff;color:#000;box-shadow:none;border-radius:0;border-bottom:2px solid #000;padding:0 0 8px}
+    header.top h1{color:#000}header.top h1 small{color:#444}
+    .yr{margin-left:auto}.yr input{color:#000;border:1px solid #000}
+    .view{display:none !important}.view.active{display:block !important}
+    .printonly{display:block;text-align:right;margin-left:auto;font-size:12px}
+    thead th{background:#1f3864 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    table.exp thead th{background:#8a4326 !important}
+    .card,table{box-shadow:none}
+    tbody input,tbody select{border:none}
+    @page{margin:12mm}
+  }
+
+  /* --- iOS / touch & modal --- */
+  @media (max-width:820px){
+    tbody input, tbody select, .setrow input, .firma input, .yr input, .modal textarea{font-size:16px}
+  }
+  .scroll{-webkit-overflow-scrolling:touch}
+  .modal-bg{position:fixed;inset:0;background:rgba(20,22,30,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:18px}
+  .modal-bg.on{display:flex}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:12px;max-width:560px;width:100%;max-height:85vh;overflow:auto;padding:20px;box-shadow:0 16px 50px rgba(0,0,0,.3)}
+  .modal h3{font-family:Georgia,serif;margin:0 0 8px;color:var(--navy);font-size:18px}
+  .modal p{font-size:13px;color:#6c6657;margin:0 0 10px}
+  .modal textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:8px;padding:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;resize:vertical}
+  .modal .mbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  @media print{.modal-bg{display:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 id="appTitle">Kontabiliteti i plotë<small>Të ardhura · Shpenzime · TVSH · Buxhet · Saldo</small></h1>
+    <div class="printonly" id="printMeta"></div>
+    <div class="yr">
+      <label>Viti</label>
+      <input type="number" id="year" value="2026" onchange="setYear(this.value)">
+    </div>
+    <div class="gbtns noprint">
+      <button onclick="window.print()">🖨 Printo / PDF</button>
+      <button onclick="backup()">Backup</button>
+      <button onclick="document.getElementById('imp').click()">Rikthe</button>
+      <input type="file" id="imp" accept=".json" style="display:none" onchange="restore(event)">
+      <button onclick="pasteRestore(function(o){state=Object.assign(defaults(),o);save();document.getElementById('year').value=state.year;applyTitle();renderAll();})">Rikthe tekst</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs"></nav>
+
+  <!-- DASHBOARD -->
+  <section class="view" id="v-dash">
+    <div class="cards">
+      <div class="card g"><div class="lab">Të ardhura (neto)</div><div class="val" id="k_inc">0</div></div>
+      <div class="card r"><div class="lab">Shpenzime (neto)</div><div class="val" id="k_exp">0</div></div>
+      <div class="card"><div class="lab">Rezultati operativ</div><div class="val" id="k_op">0</div></div>
+      <div class="card gold"><div class="lab">Fitimi para tatimit</div><div class="val" id="k_profit">0</div></div>
+    </div>
+    <div class="grid2">
+      <div>
+        <h2 class="sec">TVSH</h2>
+        <table class="mini">
+          <tbody>
+            <tr><td>TVSH e mbledhur</td><td class="num" id="k_vatc">0</td></tr>
+            <tr><td>TVSH e paguar (zbritshme)</td><td class="num" id="k_vatp">0</td></tr>
+            <tr><td><strong>Bilanci i TVSH-së (për të paguar)</strong></td><td class="num" id="k_vatb"><strong>0</strong></td></tr>
+          </tbody>
+        </table>
+        <h2 class="sec">Likuiditeti & pozicioni (kumulative)</h2>
+        <table class="mini">
+          <tbody>
+            <tr><td>Gjendja e arkës/bankës</td><td class="num" id="k_cash">0</td></tr>
+            <tr><td>Të arkëtueshme të hapura</td><td class="num pos" id="k_recv">0</td></tr>
+            <tr><td>Të pagueshme të hapura</td><td class="num neg" id="k_pay">0</td></tr>
+            <tr><td>Zhvlerësimi (AfA) i vitit</td><td class="num" id="k_dep">0</td></tr>
+            <tr><td><strong>Kapitali (fund i vitit)</strong></td><td class="num" id="k_eq"><strong>0</strong></td></tr>
+          </tbody>
+        </table>
+        <h2 class="sec">Buxheti (Plan / Aktual)</h2>
+        <table class="mini">
+          <thead><tr><th></th><th class="num">Aktual</th><th class="num">Plan</th><th class="num">Diferenca</th></tr></thead>
+          <tbody>
+            <tr><td>Të ardhura</td><td class="num" id="b_ia">0</td><td class="num" id="b_ip">0</td><td class="num" id="b_id">0</td></tr>
+            <tr><td>Shpenzime</td><td class="num" id="b_ea">0</td><td class="num" id="b_ep">0</td><td class="num" id="b_ed">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h2 class="sec">Pasqyra mujore (neto)</h2>
+        <table class="mini"><thead><tr><th>Muaji</th><th class="num">Të ardhura</th><th class="num">Shpenzime</th><th class="num">Rezultati</th></tr></thead><tbody id="monthly"></tbody></table>
+        <h2 class="sec">Pasqyra tremujore (neto)</h2>
+        <table class="mini"><thead><tr><th>Tremujori</th><th class="num">Të ardhura</th><th class="num">Shpenzime</th><th class="num">Rezultati</th></tr></thead><tbody id="quarterly"></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- INCOME -->
+  <section class="view" id="v-inc">
+    <div class="toolbar noprint" style="margin-bottom:10px"><button class="act primary" onclick="addLedger('income')">+ Shto rresht</button></div>
+    <div class="scroll"><table id="t-inc"></table></div>
+  </section>
+
+  <!-- EXPENSE -->
+  <section class="view" id="v-exp">
+    <div class="toolbar noprint" style="margin-bottom:10px"><button class="act primary" onclick="addLedger('expense')">+ Shto rresht</button></div>
+    <div class="scroll"><table id="t-exp" class="exp"></table></div>
+  </section>
+
+  <!-- BUDGET -->
+  <section class="view" id="v-bud">
+    <h2 class="sec">Buxheti — Plani mujor vs Aktuali (neto)</h2>
+    <div class="scroll"><table id="t-bud"></table></div>
+    <p class="hint">Plani vendoset për muaj; Aktuali dhe Diferenca llogariten automatikisht sipas vitit të zgjedhur.</p>
+  </section>
+
+  <!-- ASSETS -->
+  <section class="view" id="v-ast">
+    <div class="toolbar noprint" style="margin-bottom:10px"><button class="act primary" onclick="addAsset()">+ Shto mjet</button></div>
+    <div class="scroll"><table id="t-ast"></table></div>
+    <p class="hint">Zhvlerësimi linear: vlera ÷ jeta e dobishme. Zhvlerësimi i vitit zbritet automatikisht nga fitimi në Përmbledhje.</p>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="view" id="v-set">
+    <h2 class="sec">Cilësimet</h2>
+    <div class="setbox">
+      <div class="setrow"><label>Emri i firmës</label><input type="text" id="s_firma" oninput="setS('firma',this.value)"></div>
+      <div class="setrow"><label>Gjendja fillestare e arkës/bankës (€)</label><input type="number" id="s_cash" oninput="setS('openingCash',this.value)"></div>
+      <div class="setrow"><label>Kapitali fillestar (€)</label><input type="number" id="s_cap" oninput="setS('openingCapital',this.value)"></div>
+      <div class="setrow"><label>Derdhje private — viti (€)</label><input type="number" id="s_contr" oninput="setS('contributions',this.value)"></div>
+      <div class="setrow"><label>Tërheqje private — viti (€)</label><input type="number" id="s_draw" oninput="setS('draws',this.value)"></div>
+    </div>
+    <h2 class="sec">Listat (një vlerë për rresht)</h2>
+    <div class="listbox">
+      <div><strong>Kategoritë e të ardhurave</strong><textarea id="l_inc" oninput="setList('incomeCats',this.value)"></textarea></div>
+      <div><strong>Kategoritë e shpenzimeve</strong><textarea id="l_exp" oninput="setList('expenseCats',this.value)"></textarea></div>
+      <div><strong>Normat e TVSH-së (p.sh. 20 për 20%)</strong><textarea id="l_vat" oninput="setList('vatRates',this.value)"></textarea></div>
+      <div><strong>Mënyrat e pagesës</strong><textarea id="l_met" oninput="setList('methods',this.value)"></textarea></div>
+    </div>
+    <p class="hint">Pas ndryshimit të listave, kthehu te skedat e tjera për t'i parë të përditësuara. Excel/JSON ruhet automatikisht në shfletues. Monedha: EUR. Shënim: ky mjet nuk është revizionalisht i sigurt — për deklarata zyrtare përdor program të certifikuar.</p>
+  </section>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modalBox"></div></div>
+<script>
+const KEY="kontabiliteti_plote_v1";
+const fmt=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
+const money=n=>fmt.format(isFinite(n)?n:0);
+const num=v=>{const n=parseFloat(String(v).replace(',','.'));return isNaN(n)?0:n;};
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const yr=d=>d?parseInt(String(d).slice(0,4)):0;
+const mo=d=>d?parseInt(String(d).slice(5,7)):0;
+const months=["Janar","Shkurt","Mars","Prill","Maj","Qershor","Korrik","Gusht","Shtator","Tetor","Nëntor","Dhjetor"];
+const mAbbr=["Jan","Shk","Mar","Pri","Maj","Qer","Kor","Gus","Sht","Tet","Nën","Dhj"];
+
+let state=defaults();
+function defaults(){return{
+  year:2026,
+  settings:{firma:"Firma ime SHPK",openingCash:5000,openingCapital:10000,contributions:0,draws:0},
+  incomeCats:["Shitje","Shërbime","Konsulencë","Abonime","Interesa","Të ardhura të tjera"],
+  expenseCats:["Qira","Paga","Shërbime komunale","Materiale","Marketing","Sigurime","Software","Udhëtime","Furnizime zyre","Taksa","Tarifa bankare","Të tjera"],
+  vatRates:[0,6,10,13,20],
+  methods:["Kasa","Banka","Kartë krediti","Tjetër"],
+  income:[
+    {date:"2026-01-15",beleg:"F-2026-001",desc:"Faturë #1001",cat:"Shitje",partner:"Alpha GmbH",method:"Banka",net:2400,vat:20,status:"Paguar",payDate:"2026-01-20",due:"2026-02-14",note:""},
+    {date:"2026-02-03",beleg:"F-2026-002",desc:"Konsulencë Shkurt",cat:"Konsulencë",partner:"Beta SA",method:"Banka",net:1800,vat:20,status:"Hapur",payDate:"",due:"2026-03-05",note:""},
+    {date:"2026-03-20",beleg:"F-2026-003",desc:"Kontratë shërbimi",cat:"Shërbime",partner:"Gamma AG",method:"Banka",net:3200,vat:20,status:"Paguar",payDate:"2026-03-28",due:"2026-04-19",note:""}
+  ],
+  expense:[
+    {date:"2026-01-05",beleg:"S-2026-001",desc:"Qira zyre",cat:"Qira",partner:"ImmoLux",method:"Banka",net:1200,vat:0,status:"Paguar",payDate:"2026-01-05",due:"2026-01-05",note:""},
+    {date:"2026-01-28",beleg:"S-2026-002",desc:"Pagë",cat:"Paga",partner:"Lista e pagave",method:"Banka",net:3500,vat:0,status:"Paguar",payDate:"2026-01-28",due:"2026-01-28",note:""},
+    {date:"2026-02-10",beleg:"S-2026-003",desc:"Software cloud",cat:"Software",partner:"SaaS Co",method:"Kartë krediti",net:250,vat:20,status:"Paguar",payDate:"2026-02-10",due:"2026-02-10",note:""},
+    {date:"2026-03-08",beleg:"S-2026-004",desc:"Reklama",cat:"Marketing",partner:"AdNet",method:"Banka",net:600,vat:20,status:"Hapur",payDate:"",due:"2026-04-07",note:""}
+  ],
+  budget:{inc:{Shitje:Array(12).fill(2000)},exp:{Qira:Array(12).fill(1200),Paga:Array(12).fill(3500),Marketing:Array(12).fill(400)}},
+  assets:[
+    {name:"Laptop",date:"2025-06-01",cost:1500,life:3},
+    {name:"Mobilje zyre",date:"2026-02-01",cost:2400,life:8}
+  ]
+};}
+
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s)state=Object.assign(defaults(),s);}catch(e){}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+
+/* ---------- TABS ---------- */
+const TABS=[["dash","Përmbledhja"],["inc","Të ardhura"],["exp","Shpenzime"],["bud","Buxheti"],["ast","Mjetet & Zhvlerësimi"],["set","Cilësimet"]];
+let cur="dash";
+function buildTabs(){
+  const n=document.getElementById('tabs');n.innerHTML="";
+  TABS.forEach(([id,lab])=>{const b=document.createElement('button');b.textContent=lab;b.onclick=()=>show(id);if(id===cur)b.className="active";n.appendChild(b);});
+}
+function show(id){cur=id;document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+id).classList.add('active');buildTabs();renderAll();}
+
+/* ---------- VAT/GROSS ---------- */
+const vatAmt=r=>num(r.net)*num(r.vat)/100;
+const gross=r=>num(r.net)+vatAmt(r);
+const inYear=(r,y)=>yr(r.date)===y;
+
+/* ---------- LEDGER ---------- */
+function ledgerHead(kind){
+  const p=kind==='income'?'Klienti':'Furnizuesi';
+  return `<thead><tr>
+    <th style="width:120px">Data</th><th style="width:95px">Nr. Belegut</th><th>Përshkrimi</th>
+    <th style="width:140px">Kategoria</th><th style="width:120px">${p}</th><th style="width:115px">Mënyra</th>
+    <th class="num" style="width:95px">Neto</th><th class="num" style="width:70px">TVSH %</th>
+    <th class="num" style="width:90px">TVSH</th><th class="num" style="width:100px">Bruto</th>
+    <th style="width:95px">Statusi</th><th style="width:120px">Data pagesës</th><th style="width:120px">Afati</th>
+    <th class="act"></th></tr></thead>`;
+}
+function opts(list,val){return list.map(o=>`<option value="${esc(o)}"${String(o)===String(val)?' selected':''}>${esc(o)}</option>`).join('');}
+function renderLedger(kind){
+  const data=state[kind], cats=kind==='income'?state.incomeCats:state.expenseCats;
+  const tbl=document.getElementById(kind==='income'?'t-inc':'t-exp');
+  let body="",ti=0,tv=0,tg=0;
+  data.forEach((r,i)=>{
+    const va=vatAmt(r),g=gross(r);ti+=num(r.net);tv+=va;tg+=g;
+    body+=`<tr>
+      <td><input type="date" value="${esc(r.date)}" onchange="setL('${kind}',${i},'date',this.value)"></td>
+      <td><input type="text" value="${esc(r.beleg)}" onchange="setL('${kind}',${i},'beleg',this.value)"></td>
+      <td><input type="text" value="${esc(r.desc)}" oninput="setL('${kind}',${i},'desc',this.value)"></td>
+      <td><select onchange="setL('${kind}',${i},'cat',this.value)"><option value=""></option>${opts(cats,r.cat)}</select></td>
+      <td><input type="text" value="${esc(r.partner)}" oninput="setL('${kind}',${i},'partner',this.value)"></td>
+      <td><select onchange="setL('${kind}',${i},'method',this.value)"><option value=""></option>${opts(state.methods,r.method)}</select></td>
+      <td><input type="number" step="0.01" value="${r.net||''}" oninput="setL('${kind}',${i},'net',this.value)"></td>
+      <td><select onchange="setL('${kind}',${i},'vat',this.value)">${opts(state.vatRates.map(x=>x+''),r.vat+'')}</select></td>
+      <td class="calc" data-c="${kind}-vat-${i}">${money(va)}</td>
+      <td class="calc b" data-c="${kind}-gr-${i}">${money(g)}</td>
+      <td><select onchange="setL('${kind}',${i},'status',this.value)">${opts(['Paguar','Hapur'],r.status)}</select></td>
+      <td><input type="date" value="${esc(r.payDate)}" onchange="setL('${kind}',${i},'payDate',this.value)"></td>
+      <td><input type="date" value="${esc(r.due)}" onchange="setL('${kind}',${i},'due',this.value)"></td>
+      <td class="act"><button class="del" onclick="delLedger('${kind}',${i})">✕</button></td></tr>`;
+  });
+  const foot=`<tfoot><tr><td colspan="6">TOTALI</td>
+    <td class="num">${money(ti)}</td><td></td><td class="num">${money(tv)}</td><td class="num">${money(tg)}</td>
+    <td colspan="4"></td></tr></tfoot>`;
+  tbl.innerHTML=ledgerHead(kind)+`<tbody>${body}</tbody>`+foot;
+}
+function setL(kind,i,k,v){state[kind][i][k]=(k==='net')?num(v):v;save();
+  // light update for computed cells + footer
+  const r=state[kind][i];
+  const vc=document.querySelector(`[data-c="${kind}-vat-${i}"]`),gc=document.querySelector(`[data-c="${kind}-gr-${i}"]`);
+  if(vc)vc.textContent=money(vatAmt(r));if(gc)gc.textContent=money(gross(r));
+  // footer recompute
+  let ti=0,tv=0,tg=0;state[kind].forEach(x=>{ti+=num(x.net);tv+=vatAmt(x);tg+=gross(x);});
+  const tbl=document.getElementById(kind==='income'?'t-inc':'t-exp');
+  const tf=tbl.querySelector('tfoot tr');
+  if(tf){tf.children[1].textContent=money(ti);tf.children[3].textContent=money(tv);tf.children[4].textContent=money(tg);}
+}
+function addLedger(kind){state[kind].push({date:state.year+"-01-01",beleg:"",desc:"",cat:"",partner:"",method:"Banka",net:0,vat:state.vatRates.includes(20)?20:state.vatRates[0],status:"Hapur",payDate:"",due:"",note:""});save();renderLedger(kind);}
+function delLedger(kind,i){state[kind].splice(i,1);save();renderLedger(kind);}
+
+/* ---------- BUDGET ---------- */
+function bget(kind,cat,m){const b=state.budget[kind]||{};return (b[cat]&&b[cat][m]!=null)?b[cat][m]:0;}
+function bset(kind,cat,m,v){if(!state.budget[kind])state.budget[kind]={};if(!state.budget[kind][cat])state.budget[kind][cat]=Array(12).fill(0);state.budget[kind][cat][m]=num(v);save();renderBudget();}
+function actualByCat(kind,cat){const data=kind==='inc'?state.income:state.expense;let s=0;data.forEach(r=>{if(r.cat===cat&&inYear(r,state.year))s+=num(r.net);});return s;}
+function renderBudget(){
+  const tbl=document.getElementById('t-bud');
+  let head=`<thead><tr><th style="width:150px">Kategoria</th>`+mAbbr.map(m=>`<th class="num">${m}</th>`).join('')+`<th class="num">Plan</th><th class="num">Aktual</th><th class="num">Dif.</th></tr></thead>`;
+  function section(title,kind,cats){
+    let rows=`<tr><td colspan="${13+3}" style="background:var(--purp);color:#fff;font-weight:700;padding:7px 9px">${title}</td></tr>`;
+    let sumP=0,sumA=0;
+    cats.forEach(cat=>{
+      let plan=0;const cells=mAbbr.map((_,m)=>{const v=bget(kind,cat,m);plan+=v;return `<td><input type="number" step="0.01" value="${v||''}" oninput="bset('${kind}','${esc(cat)}',${m},this.value)"></td>`;}).join('');
+      const act=actualByCat(kind,cat);sumP+=plan;sumA+=act;
+      rows+=`<tr><td>${esc(cat)}</td>${cells}<td class="calc b">${money(plan)}</td><td class="calc">${money(act)}</td><td class="calc ${act-plan>=0?'pos':'neg'}">${money(act-plan)}</td></tr>`;
+    });
+    rows+=`<tr style="background:#eef1f7;font-weight:700"><td>Subtotal</td><td colspan="12"></td><td class="calc b">${money(sumP)}</td><td class="calc b">${money(sumA)}</td><td class="calc b ${sumA-sumP>=0?'pos':'neg'}">${money(sumA-sumP)}</td></tr>`;
+    return {rows,sumP,sumA};
+  }
+  const I=section("TË ARDHURA","inc",state.incomeCats);
+  const E=section("SHPENZIME","exp",state.expenseCats);
+  const resP=I.sumP-E.sumP,resA=I.sumA-E.sumA;
+  const res=`<tr style="background:var(--navy);color:#fff;font-weight:700"><td>REZULTATI (neto)</td><td colspan="12"></td><td class="num">${money(resP)}</td><td class="num">${money(resA)}</td><td class="num">${money(resA-resP)}</td></tr>`;
+  tbl.innerHTML=head+`<tbody>${I.rows}${E.rows}${res}</tbody>`;
+}
+
+/* ---------- ASSETS ---------- */
+function depAnnual(a){return num(a.life)>0?num(a.cost)/num(a.life):0;}
+function depThisYear(a,y){const by=yr(a.date);if(!by||num(a.life)<=0)return 0;return (y>=by&&y<=by+num(a.life)-1)?depAnnual(a):0;}
+function depAccum(a,y){const by=yr(a.date);if(!by||num(a.life)<=0)return 0;const el=Math.max(0,Math.min(num(a.life),y-by+1));return depAnnual(a)*el;}
+function renderAssets(){
+  const tbl=document.getElementById('t-ast'),y=state.year;
+  let head=`<thead><tr><th>Emërtimi</th><th style="width:130px">Data e blerjes</th><th class="num" style="width:120px">Vlera</th><th class="num" style="width:90px">Jeta (vite)</th><th class="num">Zhvl. vjetor</th><th class="num">Akumuluar</th><th class="num">Vlera e mbetur</th><th class="num">Zhvl. i vitit</th><th class="act"></th></tr></thead>`;
+  let body="",tc=0,td=0,tb=0,ty=0;
+  state.assets.forEach((a,i)=>{
+    const an=depAnnual(a),ac=depAccum(a,y),bv=num(a.cost)-ac,dy=depThisYear(a,y);
+    tc+=num(a.cost);td+=ac;tb+=bv;ty+=dy;
+    body+=`<tr>
+      <td><input type="text" value="${esc(a.name)}" oninput="setA(${i},'name',this.value)"></td>
+      <td><input type="date" value="${esc(a.date)}" onchange="setA(${i},'date',this.value)"></td>
+      <td><input type="number" step="0.01" value="${a.cost||''}" oninput="setA(${i},'cost',this.value)"></td>
+      <td><input type="number" step="1" value="${a.life||''}" oninput="setA(${i},'life',this.value)"></td>
+      <td class="calc">${money(an)}</td><td class="calc">${money(ac)}</td><td class="calc b">${money(bv)}</td><td class="calc">${money(dy)}</td>
+      <td class="act"><button class="del" onclick="delAsset(${i})">✕</button></td></tr>`;
+  });
+  const foot=`<tfoot><tr><td>TOTALI</td><td></td><td class="num">${money(tc)}</td><td></td><td></td><td class="num">${money(td)}</td><td class="num">${money(tb)}</td><td class="num">${money(ty)}</td><td class="act"></td></tr></tfoot>`;
+  tbl.innerHTML=head+`<tbody>${body}</tbody>`+foot;
+}
+function setA(i,k,v){state.assets[i][k]=(k==='cost'||k==='life')?num(v):v;save();renderAssets();renderDash();}
+function addAsset(){state.assets.push({name:"",date:state.year+"-01-01",cost:0,life:1});save();renderAssets();}
+function delAsset(i){state.assets.splice(i,1);save();renderAssets();renderDash();}
+
+/* ---------- DASHBOARD ---------- */
+function sumNet(kind,filter){const d=state[kind];let s=0;d.forEach(r=>{if(filter(r))s+=num(r.net);});return s;}
+function sumVat(kind,filter){const d=state[kind];let s=0;d.forEach(r=>{if(filter(r))s+=vatAmt(r);});return s;}
+function sumGross(kind,filter){const d=state[kind];let s=0;d.forEach(r=>{if(filter(r))s+=gross(r);});return s;}
+function renderDash(){
+  const y=state.year, fy=r=>inYear(r,y);
+  const inc=sumNet('income',fy), exp=sumNet('expense',fy);
+  const vatc=sumVat('income',fy), vatp=sumVat('expense',fy);
+  let dep=0;state.assets.forEach(a=>dep+=depThisYear(a,y));
+  const op=inc-exp, profit=op-dep;
+  const set=state.settings;
+  const cash=num(set.openingCash)+sumGross('income',r=>r.status==='Paguar')-sumGross('expense',r=>r.status==='Paguar');
+  const recv=sumGross('income',r=>r.status==='Hapur'), pay=sumGross('expense',r=>r.status==='Hapur');
+  const eq=num(set.openingCapital)+profit+num(set.contributions)-num(set.draws);
+  const set1=(id,v)=>document.getElementById(id).textContent=money(v);
+  set1('k_inc',inc);set1('k_exp',exp);set1('k_op',op);set1('k_profit',profit);
+  set1('k_vatc',vatc);set1('k_vatp',vatp);document.getElementById('k_vatb').innerHTML='<strong>'+money(vatc-vatp)+'</strong>';
+  set1('k_cash',cash);set1('k_recv',recv);set1('k_pay',pay);set1('k_dep',dep);
+  document.getElementById('k_eq').innerHTML='<strong>'+money(eq)+'</strong>';
+  // budget
+  let bip=0,bep=0;Object.values(state.budget.inc||{}).forEach(a=>a.forEach(v=>bip+=num(v)));
+  Object.values(state.budget.exp||{}).forEach(a=>a.forEach(v=>bep+=num(v)));
+  set1('b_ia',inc);set1('b_ip',bip);set1('b_id',inc-bip);
+  set1('b_ea',exp);set1('b_ep',bep);set1('b_ed',exp-bep);
+  // monthly
+  let mb="";for(let m=1;m<=12;m++){const fi=r=>inYear(r,y)&&mo(r.date)===m;
+    const mi=sumNet('income',fi),me=sumNet('expense',fi);
+    mb+=`<tr><td>${months[m-1]}</td><td class="num pos">${money(mi)}</td><td class="num neg">${money(me)}</td><td class="num"><strong>${money(mi-me)}</strong></td></tr>`;}
+  document.getElementById('monthly').innerHTML=mb;
+  // quarterly
+  let qb="";const qn=["T1 (Jan–Mar)","T2 (Pri–Qer)","T3 (Kor–Sht)","T4 (Tet–Dhj)"];
+  for(let q=0;q<4;q++){const fi=r=>inYear(r,y)&&mo(r.date)>=q*3+1&&mo(r.date)<=q*3+3;
+    const qi=sumNet('income',fi),qe=sumNet('expense',fi);
+    qb+=`<tr><td>${qn[q]}</td><td class="num pos">${money(qi)}</td><td class="num neg">${money(qe)}</td><td class="num"><strong>${money(qi-qe)}</strong></td></tr>`;}
+  document.getElementById('quarterly').innerHTML=qb;
+}
+
+/* ---------- SETTINGS ---------- */
+function setS(k,v){state.settings[k]=(k==='firma')?v:num(v);save();applyTitle();if(cur==='dash')renderDash();}
+function setList(k,v){state[k]=v.split('\n').map(x=>x.trim()).filter(x=>x!=='').map(x=>k==='vatRates'?num(x):x);save();}
+function loadSettings(){
+  const s=state.settings;
+  document.getElementById('s_firma').value=s.firma||"";document.getElementById('s_cash').value=s.openingCash||0;
+  document.getElementById('s_cap').value=s.openingCapital||0;document.getElementById('s_contr').value=s.contributions||0;
+  document.getElementById('s_draw').value=s.draws||0;
+  document.getElementById('l_inc').value=state.incomeCats.join('\n');
+  document.getElementById('l_exp').value=state.expenseCats.join('\n');
+  document.getElementById('l_vat').value=state.vatRates.join('\n');
+  document.getElementById('l_met').value=state.methods.join('\n');
+}
+
+/* ---------- COMMON ---------- */
+function applyTitle(){document.getElementById('appTitle').innerHTML=esc(state.settings.firma||'Kontabiliteti i plotë')+'<small>Të ardhura · Shpenzime · TVSH · Buxhet · Saldo</small>';}
+function setYear(v){state.year=parseInt(v)||state.year;save();renderAll();}
+function renderAll(){
+  if(cur==='dash')renderDash();
+  if(cur==='inc')renderLedger('income');
+  if(cur==='exp')renderLedger('expense');
+  if(cur==='bud')renderBudget();
+  if(cur==='ast')renderAssets();
+  if(cur==='set')loadSettings();
+}
+function backup(){saveText("kontabiliteti-backup.json",JSON.stringify(state,null,2),"application/json");}
+function restore(ev){const f=ev.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{state=Object.assign(defaults(),JSON.parse(rd.result));save();document.getElementById('year').value=state.year;applyTitle();renderAll();}catch(e){alert("Skedar i pavlefshëm.");}};rd.readAsText(f);}
+window.addEventListener('beforeprint',()=>{document.getElementById('printMeta').innerHTML='<strong>'+esc(state.settings.firma||'')+'</strong><br>Viti '+state.year+' · '+new Date().toLocaleDateString('de-DE');});
+
+/* ---------- iOS-safe export / restore ---------- */
+const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function modalOpen(html){document.getElementById('modalBox').innerHTML=html;document.getElementById('modalBg').classList.add('on');}
+function modalClose(){document.getElementById('modalBg').classList.remove('on');}
+document.getElementById('modalBg').addEventListener('click',e=>{if(e.target.id==='modalBg')modalClose();});
+function saveText(name,text,mime){
+  try{const blob=new Blob([text],{type:mime});const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);}catch(e){}
+  if(isIOS){
+    const e2=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    let btns='<button class="act primary" onclick="(function(b){var t=document.getElementById(\'mtext\');if(navigator.clipboard){navigator.clipboard.writeText(t.value).then(function(){b.textContent=\'U kopjua ✓\';}).catch(function(){t.select();});}else{t.select();}})(this)">Kopjo</button>';
+    if(navigator.share){btns+=' <button class="act" onclick="navigator.share({title:\''+name+'\',text:document.getElementById(\'mtext\').value}).catch(function(){})">Ndaj…</button>';}
+    btns+=' <button class="act" onclick="modalClose()">Mbyll</button>';
+    modalOpen('<h3>Ruaj / Ndaj</h3><p>Në iPhone/iPad: prek <b>Kopjo</b> dhe ruaje te Notes/Files, ose <b>Ndaj…</b> → <b>Save to Files</b>.</p><textarea id="mtext" readonly>'+e2(text)+'</textarea><div class="mbtns">'+btns+'</div>');
+    const t=document.getElementById('mtext');t.focus();t.select();
+  }
+}
+function pasteRestore(applyFn){
+  modalOpen('<h3>Rikthe nga teksti</h3><p>Ngjit përmbajtjen e backup-it (JSON) dhe prek Rikthe.</p><textarea id="prest" placeholder="Ngjit JSON këtu…"></textarea><div class="mbtns"><button class="act primary" id="prestBtn">Rikthe</button><button class="act" onclick="modalClose()">Anulo</button></div>');
+  document.getElementById('prestBtn').onclick=function(){try{applyFn(JSON.parse(document.getElementById('prest').value));modalClose();}catch(e){alert('JSON i pavlefshëm.');}};
+}
+
+load();applyTitle();document.getElementById('year').value=state.year;buildTabs();show('dash');
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
+</body>
+</html>

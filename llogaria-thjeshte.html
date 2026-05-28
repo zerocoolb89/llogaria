@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Llogaria">
+<meta name="theme-color" content="#1f3864">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Llogaria · Të ardhura, Shpenzime, Saldo</title>
+<style>
+  :root{
+    --navy:#1f3864; --blue:#2e5496; --paper:#f6f3ec; --ink:#1a1c22;
+    --green:#1f7a4d; --red:#b3261e; --line:#d8d2c4; --gold:#b8862f; --card:#fffdf8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;
+    background:var(--paper); color:var(--ink); font-size:14px; line-height:1.4;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:24px}
+  header.top{
+    background:var(--navy); color:#fff; border-radius:10px; padding:18px 22px;
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+    box-shadow:0 6px 20px rgba(31,56,100,.18);
+  }
+  header.top h1{font-family:Georgia,"Times New Roman",serif; font-size:22px; margin:0; font-weight:600; letter-spacing:.3px}
+  header.top h1 small{display:block;font-size:11px;font-weight:400;color:#b9c6e0;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+  .firma{margin-left:auto;display:flex;flex-direction:column;gap:3px}
+  .firma label{font-size:10px;color:#b9c6e0;text-transform:uppercase;letter-spacing:1px}
+  .firma input{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:6px;padding:7px 10px;font-size:13px;min-width:190px}
+  .firma input::placeholder{color:#9fb0d0}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+  button{
+    font-family:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);
+    color:var(--ink);padding:9px 14px;border-radius:7px;cursor:pointer;transition:.15s;font-weight:500;
+  }
+  button:hover{border-color:var(--blue);color:var(--blue)}
+  button.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+  button.primary:hover{background:var(--navy);color:#fff}
+  button.ghost{background:transparent}
+  button.danger:hover{border-color:var(--red);color:var(--red)}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;position:relative;overflow:hidden}
+  .card .lab{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:#7b766a}
+  .card .val{font-family:Georgia,serif;font-size:26px;font-weight:600;margin-top:6px}
+  .card.inc{border-top:3px solid var(--green)} .card.inc .val{color:var(--green)}
+  .card.exp{border-top:3px solid var(--red)} .card.exp .val{color:var(--red)}
+  .card.bal{border-top:3px solid var(--gold)} .card.bal .val{color:var(--navy)}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  thead th{background:var(--blue);color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;padding:11px 10px;text-align:left}
+  thead th.num{text-align:right} thead th.act{width:42px}
+  tbody td{border-top:1px solid var(--line);padding:4px 8px;vertical-align:middle}
+  tbody tr:nth-child(even){background:#faf7f0}
+  tbody input{width:100%;border:1px solid transparent;background:transparent;font-family:inherit;font-size:13.5px;padding:6px;border-radius:5px;color:var(--ink)}
+  tbody input:focus{outline:none;border-color:var(--blue);background:#fff}
+  tbody input[type=number]{text-align:right}
+  td.saldo{text-align:right;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;padding-right:14px}
+  td.income input{color:var(--green)} td.expense input{color:var(--red)}
+  .del{border:none;background:transparent;color:#b8b2a4;font-size:17px;cursor:pointer;padding:2px 6px}
+  .del:hover{color:var(--red)}
+  tfoot td{border-top:2px solid var(--navy);background:#eef1f7;font-weight:700;padding:11px 10px}
+  tfoot td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .hint{color:#8a857a;font-size:12px;margin-top:14px;font-style:italic}
+  .printhead{display:none}
+  @media print{
+    body{background:#fff}
+    .wrap{max-width:100%;padding:0}
+    .toolbar,.firma,.del,thead th.act,tbody td.act{display:none !important}
+    header.top{background:#fff;color:#000;box-shadow:none;border-bottom:2px solid #000;border-radius:0;padding:0 0 10px}
+    header.top h1{color:#000} header.top h1 small{color:#444}
+    .printhead{display:block;margin-left:auto;text-align:right;font-size:12px}
+    .card{border:1px solid #999;break-inside:avoid}
+    .cards{grid-template-columns:repeat(3,1fr)}
+    tbody input{border:none;padding:3px 6px}
+    thead th{background:#1f3864 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    table,.card{box-shadow:none}
+    @page{margin:14mm}
+  }
+  @media(max-width:680px){.cards{grid-template-columns:1fr}.firma{margin-left:0;width:100%}}
+
+  /* --- iOS / touch & modal --- */
+  @media (max-width:820px){
+    tbody input, tbody select, .setrow input, .firma input, .yr input, .modal textarea{font-size:16px}
+  }
+  .scroll{-webkit-overflow-scrolling:touch}
+  .modal-bg{position:fixed;inset:0;background:rgba(20,22,30,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:18px}
+  .modal-bg.on{display:flex}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:12px;max-width:560px;width:100%;max-height:85vh;overflow:auto;padding:20px;box-shadow:0 16px 50px rgba(0,0,0,.3)}
+  .modal h3{font-family:Georgia,serif;margin:0 0 8px;color:var(--navy);font-size:18px}
+  .modal p{font-size:13px;color:#6c6657;margin:0 0 10px}
+  .modal textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:8px;padding:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;resize:vertical}
+  .modal .mbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  @media print{.modal-bg{display:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Llogaria<small>Të ardhura · Shpenzime · Saldo</small></h1>
+    <div class="firma">
+      <label>Emri i firmës</label>
+      <input id="firma" placeholder="Firma ime SHPK">
+    </div>
+    <div class="printhead">
+      <strong id="phFirma"></strong><br>
+      <span id="phDate"></span>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <button class="primary" onclick="addRow()">+ Shto rresht</button>
+    <button onclick="window.print()">🖨 Printo / PDF</button>
+    <button class="ghost" onclick="exportCSV()">Eksporto CSV</button>
+    <button class="ghost" onclick="backup()">Ruaj backup (JSON)</button>
+    <button class="ghost" onclick="document.getElementById('imp').click()">Rikthe backup</button>
+    <input type="file" id="imp" accept=".json" style="display:none" onchange="restore(event)">
+    <button class="ghost" onclick="pasteRestore(function(o){state=o;save();document.getElementById('firma').value=state.firma||'';render();})">Rikthe (ngjit tekst)</button>
+    <button class="ghost danger" onclick="clearAll()">Pastro të gjitha</button>
+  </div>
+
+  <div class="cards">
+    <div class="card inc"><div class="lab">Të ardhura gjithsej</div><div class="val" id="cInc">0</div></div>
+    <div class="card exp"><div class="lab">Shpenzime gjithsej</div><div class="val" id="cExp">0</div></div>
+    <div class="card bal"><div class="lab">Saldo</div><div class="val" id="cBal">0</div></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:130px">Data</th>
+        <th>Përshkrimi</th>
+        <th class="num" style="width:140px">Të ardhura</th>
+        <th class="num" style="width:140px">Shpenzime</th>
+        <th class="num" style="width:150px">Saldo</th>
+        <th class="act"></th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">TOTALI</td>
+        <td class="num" id="fInc">0</td>
+        <td class="num" id="fExp">0</td>
+        <td class="num" id="fBal">0</td>
+        <td class="act"></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <p class="hint">Plotëso vetëm fushat Të ardhura ose Shpenzime për çdo rresht. Saldoja dhe totalet llogariten automatikisht. Të dhënat ruhen automatikisht në këtë shfletues. Monedha: EUR.</p>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modalBox"></div></div>
+<script>
+const KEY="llogaria_thjeshte_v1";
+let state={firma:"",rows:[]};
+const fmt=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
+const money=n=>fmt.format(isFinite(n)?n:0);
+const num=v=>{const n=parseFloat(String(v).replace(',','.'));return isNaN(n)?0:n;};
+
+function load(){
+  try{const s=JSON.parse(localStorage.getItem(KEY));if(s){state=s;}}catch(e){}
+  if(!state.rows||!state.rows.length){
+    state.rows=[
+      {date:"2026-01-05",desc:"Shitje produkti",income:2400,expense:0},
+      {date:"2026-01-10",desc:"Qira zyre",income:0,expense:1200},
+      {date:"2026-01-20",desc:"Faturë shërbimi",income:1800,expense:0},
+      {date:"2026-01-28",desc:"Pagë",income:0,expense:1500},
+    ];
+  }
+  document.getElementById('firma').value=state.firma||"";
+  render();
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+
+function render(){
+  const tb=document.getElementById('rows');tb.innerHTML="";
+  state.rows.forEach((r,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input type="date" value="${r.date||''}" onchange="upd(${i},'date',this.value)"></td>
+      <td><input type="text" value="${(r.desc||'').replace(/"/g,'&quot;')}" placeholder="Përshkrimi" oninput="upd(${i},'desc',this.value)"></td>
+      <td class="income"><input type="number" step="0.01" value="${r.income||''}" placeholder="0.00" oninput="upd(${i},'income',this.value)"></td>
+      <td class="expense"><input type="number" step="0.01" value="${r.expense||''}" placeholder="0.00" oninput="upd(${i},'expense',this.value)"></td>
+      <td class="saldo" data-saldo="${i}">—</td>
+      <td class="act"><button class="del" title="Fshi" onclick="delRow(${i})">✕</button></td>`;
+    tb.appendChild(tr);
+  });
+  recalc();
+}
+function recalc(){
+  let run=0,ti=0,te=0;
+  state.rows.forEach((r,i)=>{
+    run+=num(r.income)-num(r.expense);ti+=num(r.income);te+=num(r.expense);
+    const c=document.querySelector(`[data-saldo="${i}"]`);if(c)c.textContent=money(run);
+  });
+  document.getElementById('cInc').textContent=money(ti);
+  document.getElementById('cExp').textContent=money(te);
+  document.getElementById('cBal').textContent=money(ti-te);
+  document.getElementById('fInc').textContent=money(ti);
+  document.getElementById('fExp').textContent=money(te);
+  document.getElementById('fBal').textContent=money(ti-te);
+}
+function upd(i,k,v){state.rows[i][k]=(k==='income'||k==='expense')?num(v):v;save();recalc();}
+function addRow(){state.rows.push({date:new Date().toISOString().slice(0,10),desc:"",income:0,expense:0});save();render();}
+function delRow(i){state.rows.splice(i,1);save();render();}
+function clearAll(){if(confirm("Të fshihen të gjitha të dhënat?")){state.rows=[];save();render();}}
+document.getElementById('firma').addEventListener('input',e=>{state.firma=e.target.value;save();});
+
+function exportCSV(){
+  let run=0;const lines=[["Data","Përshkrimi","Të ardhura","Shpenzime","Saldo"]];
+  state.rows.forEach(r=>{run+=num(r.income)-num(r.expense);
+    lines.push([r.date||"",(r.desc||"").replace(/;/g,","),num(r.income).toFixed(2),num(r.expense).toFixed(2),run.toFixed(2)]);});
+  const csv="\uFEFF"+lines.map(l=>l.join(";")).join("\n");
+  saveText("llogaria.csv",csv,"text/csv;charset=utf-8");
+}
+function backup(){saveText("llogaria-backup.json",JSON.stringify(state,null,2),"application/json");}
+function restore(ev){const f=ev.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{state=JSON.parse(rd.result);save();document.getElementById('firma').value=state.firma||"";render();}catch(e){alert("Skedar i pavlefshëm.");}};rd.readAsText(f);}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+
+function printMeta(){document.getElementById('phFirma').textContent=state.firma||"";
+  document.getElementById('phDate').textContent="Data e printimit: "+new Date().toLocaleDateString('de-DE');}
+window.addEventListener('beforeprint',printMeta);
+
+/* ---------- iOS-safe export / restore ---------- */
+const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function modalOpen(html){document.getElementById('modalBox').innerHTML=html;document.getElementById('modalBg').classList.add('on');}
+function modalClose(){document.getElementById('modalBg').classList.remove('on');}
+document.getElementById('modalBg').addEventListener('click',e=>{if(e.target.id==='modalBg')modalClose();});
+function saveText(name,text,mime){
+  try{const blob=new Blob([text],{type:mime});const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);}catch(e){}
+  if(isIOS){
+    const e2=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    let btns='<button class="act primary" onclick="(function(b){var t=document.getElementById(\'mtext\');if(navigator.clipboard){navigator.clipboard.writeText(t.value).then(function(){b.textContent=\'U kopjua ✓\';}).catch(function(){t.select();});}else{t.select();}})(this)">Kopjo</button>';
+    if(navigator.share){btns+=' <button class="act" onclick="navigator.share({title:\''+name+'\',text:document.getElementById(\'mtext\').value}).catch(function(){})">Ndaj…</button>';}
+    btns+=' <button class="act" onclick="modalClose()">Mbyll</button>';
+    modalOpen('<h3>Ruaj / Ndaj</h3><p>Në iPhone/iPad: prek <b>Kopjo</b> dhe ruaje te Notes/Files, ose <b>Ndaj…</b> → <b>Save to Files</b>.</p><textarea id="mtext" readonly>'+e2(text)+'</textarea><div class="mbtns">'+btns+'</div>');
+    const t=document.getElementById('mtext');t.focus();t.select();
+  }
+}
+function pasteRestore(applyFn){
+  modalOpen('<h3>Rikthe nga teksti</h3><p>Ngjit përmbajtjen e backup-it (JSON) dhe prek Rikthe.</p><textarea id="prest" placeholder="Ngjit JSON këtu…"></textarea><div class="mbtns"><button class="act primary" id="prestBtn">Rikthe</button><button class="act" onclick="modalClose()">Anulo</button></div>');
+  document.getElementById('prestBtn').onclick=function(){try{applyFn(JSON.parse(document.getElementById('prest').value));modalClose();}catch(e){alert('JSON i pavlefshëm.');}};
+}
+
+load();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
+</body>
+</html>

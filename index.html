@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kontabiliteti">
+<meta name="theme-color" content="#1f3864">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<title>Kontabiliteti — zgjidh aplikacionin</title>
+<style>
+  :root{--navy:#1f3864;--blue:#2e5496;--paper:#f6f3ec;--ink:#1a1c22;--line:#d8d2c4;--gold:#b8862f;--card:#fffdf8;--green:#1f7a4d}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;min-height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;background:
+    radial-gradient(1200px 500px at 50% -10%, #20407a 0%, var(--navy) 55%, #16284a 100%);
+    color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+  .shell{width:100%;max-width:760px}
+  .brand{text-align:center;color:#fff;margin-bottom:26px}
+  .brand .logo{width:74px;height:74px;border-radius:18px;background:var(--card);display:inline-flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:42px;color:var(--gold);font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.3);margin-bottom:14px}
+  .brand h1{font-family:Georgia,serif;font-size:30px;margin:0;font-weight:600;letter-spacing:.3px}
+  .brand p{color:#b9c6e0;margin:6px 0 0;font-size:13px;letter-spacing:1.5px;text-transform:uppercase}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:620px){.cards{grid-template-columns:1fr}}
+  a.app{display:block;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 24px;transition:.18s;box-shadow:0 8px 24px rgba(15,25,55,.18);position:relative;overflow:hidden}
+  a.app:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(15,25,55,.28);border-color:var(--gold)}
+  a.app .tag{font-size:10.5px;text-transform:uppercase;letter-spacing:1.3px;color:#fff;background:var(--blue);display:inline-block;padding:3px 9px;border-radius:20px;margin-bottom:12px}
+  a.app.full .tag{background:var(--navy)} a.app.simple .tag{background:var(--green)}
+  a.app h2{font-family:Georgia,serif;font-size:21px;margin:0 0 8px;color:var(--navy)}
+  a.app p{margin:0;font-size:13.5px;color:#6c6657;line-height:1.5}
+  a.app .go{margin-top:16px;font-weight:600;color:var(--blue);font-size:14px}
+  a.app .go:after{content:" →"}
+  .note{margin-top:24px;text-align:center;color:#cdd7ec;font-size:12.5px;line-height:1.6}
+  .note b{color:#fff}
+</style>
+</head>
+<body>
+  <div class="shell">
+    <div class="brand">
+      <div class="logo">€</div>
+      <h1 id="firmName">Kontabiliteti</h1>
+      <p>Të ardhura · Shpenzime · Saldo</p>
+    </div>
+    <div class="cards">
+      <a class="app full" href="kontabiliteti-plote.html">
+        <span class="tag">E plotë</span>
+        <h2>Kontabiliteti i plotë</h2>
+        <p>Dashboard, të ardhura & shpenzime me TVSH, buxhet (plan/aktual), mjete & zhvlerësim, likuiditet dhe pasqyra mujore/tremujore.</p>
+        <div class="go">Hap</div>
+      </a>
+      <a class="app simple" href="llogaria-thjeshte.html">
+        <span class="tag">E thjeshtë</span>
+        <h2>Llogaria e thjeshtë</h2>
+        <p>Një tabelë e vetme: të ardhura, shpenzime dhe saldo me totale automatike. E shpejtë për përdorim të përditshëm.</p>
+        <div class="go">Hap</div>
+      </a>
+    </div>
+    <p class="note">
+      Të dhënat ruhen lokalisht në shfletues. Përdor butonin <b>Backup</b> brenda aplikacionit për t'i ruajtur.<br>
+      Në iPhone/iPad: <b>Ndaj → Zum Home-Bildschirm</b> · Në Mac/Windows (Chrome/Edge): <b>Installieren</b> nga shiriti i adresës.
+    </p>
+  </div>
+<script>
+  // optional: reflect saved company name from the full app
+  try{const s=JSON.parse(localStorage.getItem("kontabiliteti_plote_v1"));if(s&&s.settings&&s.settings.firma){document.getElementById("firmName").textContent=s.settings.firma;}}catch(e){}
+  if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
+</script>
+</body>
+</html>
